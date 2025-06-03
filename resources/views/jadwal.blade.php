@@ -18,14 +18,6 @@
                 <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition" onclick="openAddScheduleModal()">Add Schedule</button>
             </div>
             <div class="grid grid-cols-7 gap-1 text-center text-gray-600 text-sm">
-                <div class="font-semibold">Mon</div>
-                <div class="font-semibold">Tue</div>
-                <div class="font-semibold">Wed</div>
-                <div class="font-semibold">Thu</div>
-                <div class="font-semibold">Fri</div>
-                <div class="font-semibold">Sat</div>
-                <div class="font-semibold">Sun</div>
-                <!-- Dummy Schedule Data -->
                 <div class="col-span-7">
                     <div id="calendarList" class="border-t border-gray-200 py-2">
                         <div class="bg-blue-50 p-2 rounded-md mb-2" onclick="selectSchedule('Sistem Operasi Lecture', 'Monday, 09:00 - 11:00, Room A-101')">
