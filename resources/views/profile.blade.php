@@ -1,8 +1,4 @@
-@php
-    $role = 'dosen'; // Change to 'mahasiswa' to test student view
-@endphp
-
-<x-layout title="Profile" role="{{$role}}">
+<x-layout title="Profile" role="{{ $user->role }}">
     <!-- Profile Header -->
     <header class="mb-8">
         <h2 class="text-3xl font-bold text-gray-900">Profile</h2>
@@ -15,24 +11,29 @@
         <div class="bg-white p-6 rounded-lg shadow-md lg:col-span-2">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-semibold text-gray-900">User Information</h3>
-                <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition" onclick="openEditProfileModal()">Edit Profile</button>
+                <button 
+                    class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition" 
+                    onclick="openEditProfileModal()"
+                >
+                    Edit Profile
+                </button>
             </div>
             <div class="space-y-4">
                 <div>
-                    <label class="block text-gray-600 font-medium">Name</label>
-                    <p id="profileName" class="text-gray-900">{{ $role === 'dosen' ? 'Dr. John Doe' : 'Jane Smith' }}</p>
+                    <label><strong>Username</strong></label>
+                    <p id="profileName" class="text-gray-900">{{ $user->username }}</p>
                 </div>
                 <div>
-                    <label class="block text-gray-600 font-medium">Email</label>
-                    <p id="profileEmail" class="text-gray-900">{{ $role === 'dosen' ? 'john.doe@university.ac.id' : 'jane.smith@university.ac.id' }}</p>
+                    <label><strong>Email</strong></label>
+                    <p id="profileEmail" class="text-gray-900">{{ $user->email }}</p>
                 </div>
                 <div>
-                    <label class="block text-gray-600 font-medium">Role</label>
-                    <p id="profileRole" class="text-gray-900">{{ $role === 'dosen' ? 'Dosen' : 'Mahasiswa' }}</p>
+                    <label><strong>Role</strong></label>
+                    <p id="profileRole" class="text-gray-900">{{ ucfirst($user->role) }}</p>
                 </div>
                 <div>
-                    <label class="block text-gray-600 font-medium">Bio</label>
-                    <p id="profileBio" class="text-gray-900">{{ $role === 'dosen' ? 'Senior lecturer in Computer Science with 10 years of experience.' : 'Third-year Computer Science student passionate about web development.' }}</p>
+                    <label><strong>Bio</strong></label>
+                    <p id="profileBio" class="text-gray-900">{{ $user->bio ?? 'No bio yet.' }}</p>
                 </div>
             </div>
         </div>
@@ -46,7 +47,7 @@
             <div class="space-y-4">
                 <div>
                     <p class="text-gray-600">Courses Enrolled</p>
-                    <p class="text-2xl font-bold text-blue-500">{{ $role === 'dosen' ? '3' : '5' }}</p>
+                    <p class="text-2xl font-bold text-blue-500">{{ $user->role === 'dosen' ? '3' : '5' }}</p>
                 </div>
                 <div>
                     <p class="text-gray-600">Notes Created</p>
@@ -54,7 +55,7 @@
                 </div>
                 <div>
                     <p class="text-gray-600">Tasks Completed</p>
-                    <p class="text-2xl font-bold text-blue-500">{{ $role === 'dosen' ? 'N/A' : '8' }}</p>
+                    <p class="text-2xl font-bold text-blue-500">{{ $user->role === 'dosen' ? 'N/A' : '8' }}</p>
                 </div>
             </div>
         </div>
@@ -64,22 +65,52 @@
     <div id="editProfileModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
         <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Edit Profile</h3>
-            <form id="editProfileForm">
+            <form id="editProfileForm" onsubmit="event.preventDefault(); saveProfile();">
                 <div class="mb-4">
-                    <label for="editName" class="block text-gray-600 mb-2">Name</label>
-                    <input type="text" id="editName" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your name" required>
+                    <label for="editName" class="block text-gray-600 mb-2">Username</label>
+                    <input 
+                        type="text" 
+                        id="editName" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                        placeholder="Enter your username" 
+                        value="{{ $user->username }}" 
+                        required
+                    >
                 </div>
                 <div class="mb-4">
                     <label for="editEmail" class="block text-gray-600 mb-2">Email</label>
-                    <input type="email" id="editEmail" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your email" required>
+                    <input 
+                        type="email" 
+                        id="editEmail" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                        placeholder="Enter your email" 
+                        value="{{ $user->email }}" 
+                        required
+                    >
                 </div>
                 <div class="mb-4">
                     <label for="editBio" class="block text-gray-600 mb-2">Bio</label>
-                    <textarea id="editBio" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your bio" rows="4" required></textarea>
+                    <textarea 
+                        id="editBio" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                        placeholder="Enter your bio" 
+                        rows="4"
+                    >{{ $user->bio ?? '' }}</textarea>
                 </div>
                 <div class="flex justify-end space-x-2">
-                    <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition" onclick="closeEditProfileModal()">Cancel</button>
-                    <button type="button" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition" onclick="saveProfile()">Save</button>
+                    <button 
+                        type="button" 
+                        class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition" 
+                        onclick="closeEditProfileModal()"
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        type="submit" 
+                        class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+                    >
+                        Save
+                    </button>
                 </div>
             </form>
         </div>
@@ -87,30 +118,20 @@
 
     <script>
         function openEditProfileModal() {
-            const name = document.getElementById('profileName').innerText;
-            const email = document.getElementById('profileEmail').innerText;
-            const bio = document.getElementById('profileBio').innerText;
-            document.getElementById('editName').value = name;
-            document.getElementById('editEmail').value = email;
-            document.getElementById('editBio').value = bio;
             document.getElementById('editProfileModal').classList.remove('hidden');
         }
 
         function closeEditProfileModal() {
             document.getElementById('editProfileModal').classList.add('hidden');
-            document.getElementById('editName').value = '';
-            document.getElementById('editEmail').value = '';
-            document.getElementById('editBio').value = '';
         }
 
         function saveProfile() {
-            const name = document.getElementById('editName').value;
-            const email = document.getElementById('editEmail').value;
-            const bio = document.getElementById('editBio').value;
+            const name = document.getElementById('editName').value.trim();
+            const email = document.getElementById('editEmail').value.trim();
+            const bio = document.getElementById('editBio').value.trim();
 
-            // Basic validation
-            if (!name || !email || !bio) {
-                alert('Please fill in all fields.');
+            if (!name || !email) {
+                alert('Please fill in all required fields.');
                 return;
             }
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -118,13 +139,39 @@
                 return;
             }
 
-            // Update profile display
-            document.getElementById('profileName').innerText = name;
-            document.getElementById('profileEmail').innerText = email;
-            document.getElementById('profileBio').innerText = bio;
-
-            closeEditProfileModal();
-            alert('Profile updated successfully!');
+            fetch("{{ route('profile.update') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: name,
+                    email: email,
+                    bio: bio
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => Promise.reject(err));
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('profileName').innerText = name;
+                document.getElementById('profileEmail').innerText = email;
+                document.getElementById('profileBio').innerText = bio || 'No bio yet.';
+                closeEditProfileModal();
+                alert(data.message);
+            })
+            .catch(error => {
+                if (error.errors) {
+                    alert(Object.values(error.errors).flat().join('\n'));
+                } else {
+                    alert('Failed to update profile.');
+                }
+            });
         }
     </script>
 </x-layout>

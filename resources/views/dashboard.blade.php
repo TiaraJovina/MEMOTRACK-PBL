@@ -1,12 +1,14 @@
 @php
-    $role = 'mahasiswa';
+    $role = session('role');
 @endphp
 
 <x-layout role="{{$role}}">
     <!-- Dashboard Header -->
     <header class="mb-8">
         <h2 class="text-3xl font-bold text-gray-900">Dashboard</h2>
-        <p class="text-gray-600 mt-2">Welcome back! Manage your courses, notes, and tasks here.</p>
+            <p class="text-gray-600 mt-2">
+                Welcome back, {{ ucfirst(session('role')) }}! Manage your courses, notes, and tasks here.
+            </p>
     </header>
 
     <!-- Summary Section -->

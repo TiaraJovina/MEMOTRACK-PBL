@@ -12,6 +12,10 @@ class AuthController extends Controller
 
         if (auth()->attempt($credentials)) {
             $request->session()->regenerate();
+
+            // Simpan role ke session
+            $request->session()->put('role', auth()->user()->role);
+
             return redirect()->intended('/dashboard');
         }
 
