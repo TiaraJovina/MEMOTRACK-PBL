@@ -207,24 +207,24 @@
                 alert('Please select a schedule to delete.');
                 return;
             }
-            if (confirm(`Are you sure you want to delete "${selectedScheduleTitle}"?`)) {
-                const calendarList = document.getElementById('calendarList').children;
-                const scheduleList = document.getElementById('scheduleList').children;
-                for (let i = 0; i < calendarList.length; i++) {
-                    if (calendarList[i].querySelector('span').textContent === selectedScheduleTitle) {
-                        calendarList[i].remove();
-                        break;
+         if (confirm(`Are you sure you want to delete "${selectedScheduleTitle}"?`)) {
+             const calendarList = document.getElementById('calendarList').children;
+             const scheduleList = document.getElementById('scheduleList').children;
+             for (let i = 0; i < calendarList.length; i++) {
+                 if (calendarList[i].querySelector('span').textContent === selectedScheduleTitle) {
+                    calendarList[i].remove();
+                    break;
                     }
                 }
-                for (let i = 0; i < scheduleList.length; i++) {
-                    if (scheduleList[i].querySelector('span').textContent === selectedScheduleTitle) {
-                        scheduleList[i].remove();
-                        break;
+            for (let i = 0; i < scheduleList.length; i++) {
+                 if (scheduleList[i].querySelector('span').textContent === selectedScheduleTitle) {
+                     scheduleList[i].remove();
+                     break;
                     }
                 }
-                document.getElementById('scheduleTitle').innerText = 'Upcoming Events';
-                document.getElementById('scheduleList').innerHTML = '<li class="p-3 bg-blue-50 rounded-md"><span class="text-gray-600">Select an event to view details.</span></li>';
-                selectedScheduleTitle = null;
+             document.getElementById('scheduleTitle').innerText = 'Upcoming Events';
+             document.getElementById('scheduleList').innerHTML = '<li class="p-3 bg-blue-50 rounded-md"><span class="text-gray-600">Select an event to view details.</span></li>';
+             selectedScheduleTitle = null;
             }
         }
     </script>
