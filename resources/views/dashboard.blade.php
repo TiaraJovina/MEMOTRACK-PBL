@@ -6,7 +6,7 @@
     <!-- Dashboard Header -->
     <header class="mb-8">
         <h2 class="text-3xl font-bold text-gray-900">Dashboard</h2>
-        <p class="text-gray-600 mt-2">Welcome back, Dosen! Manage your courses, notes, and tasks here.</p>
+        <p class="text-gray-600 mt-2">Welcome back! Manage your courses, notes, and tasks here.</p>
     </header>
 
     <!-- Summary Section -->
@@ -27,7 +27,7 @@
             <a href="/tasks" class="text-blue-500 hover:underline mt-2 inline-block">View Tasks</a>
         </div>
     </section>
-    
+
     <!-- Recent Activity Section -->
     <section class="bg-white p-6 rounded-lg shadow-md">
         <h3 class="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h3>
