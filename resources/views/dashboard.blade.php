@@ -29,7 +29,7 @@
             <a href="/tasks" class="text-blue-500 hover:underline mt-2 inline-block">View Tasks</a>
         </div>
     </section>
-
+    
     <!-- Recent Activity Section -->
     <section class="bg-white p-6 rounded-lg shadow-md">
         <h3 class="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h3>
