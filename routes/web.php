@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AbsensiController;
 
 // ======== Public Routes ========
 
@@ -29,7 +30,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/jadwal', fn () => view('jadwal'))->name('jadwal');
     Route::get('/tugas', fn () => view('tugas'))->name('tugas');
     Route::get('/profile', fn () => view('profile'))->name('profile');
-    Route::get('/absensi', fn () => view('absensi'))->name('absensi');
+    Route::get('/absensi', [AbsensiController::class, 'index']);
+    Route::post('/absensi', [AbsensiController::class, 'store'])->name('absensi');
+    Route::patch('/absensi/update/{id}', [AbsensiController::class, 'update']);
+    Route::delete('/absensi/delete/{title}', [AbsensiController::class, 'delete'])->name('absensi.delete');
+    Route::post('/absensi/{id}/mark', [AbsensiController::class, 'markAttendance']);
 
     // Logout
     Route::post('/logout', function () {

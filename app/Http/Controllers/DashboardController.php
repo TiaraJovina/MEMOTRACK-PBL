@@ -10,4 +10,7 @@ class DashboardController extends Controller
     {
         return view('dashboard'); // Pastikan kamu punya resources/views/dashboard.blade.php
     }
+    public function absensi() {
+        
+    }
 }
