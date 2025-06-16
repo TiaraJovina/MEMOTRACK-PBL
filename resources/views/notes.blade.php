@@ -1,8 +1,8 @@
 @php
-    $role = 'dosen';
+    $role = auth()->user()->role;
 @endphp
 
-<x-layout title="Notes" role="{{$role}}">
+<x-layout title="Notes" role="{{ $role }}">
     <!-- Notes Header -->
     <header class="mb-8">
         <h2 class="text-3xl font-bold text-gray-900">Notes</h2>
@@ -17,28 +17,19 @@
                 <h3 class="text-lg font-semibold text-gray-900">Your Notes</h3>
                 <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition" onclick="openAddNoteModal()">Add Note</button>
             </div>
-            <input type="text" id="searchNotes" placeholder="Search notes..." class="w-full px-4 py-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="searchNotes()">
+
             <ul id="noteList" class="space-y-2">
-                <li class="p-3 bg-blue-50 rounded-md cursor-pointer hover:bg-blue-100 transition" onclick="selectNote('Nasi Padang', 'Details about Nasi Padang preparation.')">
-                    <span class="text-gray-900">Nasi Padang</span>
-                    <span class="text-sm text-gray-500 block">Created: 2025-04-10</span>
-                </li>
-                <li class="p-3 bg-blue-50 rounded-md cursor-pointer hover:bg-blue-100 transition" onclick="selectNote('Nasi Goreng', 'Recipe and variations of Nasi Goreng.')">
-                    <span class="text-gray-900">Nasi Goreng</span>
-                    <span class="text-sm text-gray-500 block">Created: 2025-04-09</span>
-                </li>
-                <li class="p-3 bg-blue-50 rounded-md cursor-pointer hover:bg-blue-100 transition" onclick="selectNote('Sate Ayam', 'Notes on Sate Ayam marinade.')">
-                    <span class="text-gray-900">Sate Ayam</span>
-                    <span class="text-sm text-gray-500 block">Created: 2025-04-08</span>
-                </li>
-                <li class="p-3 bg-blue-50 rounded-md cursor-pointer hover:bg-blue-100 transition" onclick="selectNote('Rendang Daging', 'Traditional Rendang cooking steps.')">
-                    <span class="text-gray-900">Rendang Daging</span>
-                    <span class="text-sm text-gray-500 block">Created: 2025-04-07</span>
-                </li>
-                <li class="p-3 bg-blue-50 rounded-md cursor-pointer hover:bg-blue-100 transition" onclick="selectNote('Gado-Gado', 'Gado-Gado sauce recipe.')">
-                    <span class="text-gray-900">Gado-Gado</span>
-                    <span class="text-sm text-gray-500 block">Created: 2025-04-06</span>
-                </li>
+                @forelse ($notes as $note)
+                    <li
+                        class="p-3 bg-blue-50 rounded-md cursor-pointer hover:bg-blue-100 transition"
+                        onclick='selectNote(@json($note))'
+                    >
+                        <span class="text-gray-900">{{ $note->title }}</span>
+                        <span class="text-sm text-gray-500 block">Created: {{ $note->created_at->format('Y-m-d') }}</span>
+                    </li>
+                @empty
+                    <li class="text-gray-500">No notes yet.</li>
+                @endforelse
             </ul>
         </div>
 
@@ -49,10 +40,13 @@
                 <span class="absolute bottom-0 left-0 w-full h-1 bg-red-500" style="background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 10%22 preserveAspectRatio=%22none%22%3E%3Cpath d=%22M0 5 Q 25 0 50 5 T 100 5%22 stroke=%22%23ef4444%22 stroke-width=%222%22 fill=%22none%22/%3E%3C/svg%3E'); background-size: 100% 100%;"></span>
             </h3>
             <p id="noteContent" class="text-gray-600 leading-loose" style="line-height: 2rem;">Click a note from the list to view its details.</p>
-            <div class="mt-4">
-                <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition" onclick="editNote()">Edit Note</button>
-                <button class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition ml-2" onclick="deleteNote()">Delete Note</button>
-            </div>
+
+            <!-- Tombol hapus -->
+            <form id="deleteNoteForm" method="POST" class="mt-4 hidden">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition">Delete Note</button>
+            </form>
         </div>
     </section>
 
@@ -60,38 +54,25 @@
     <div id="addNoteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
         <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Add New Note</h3>
-            <form>
+            <form action="{{ route('notes.store') }}" method="POST">
+                @csrf
                 <div class="mb-4">
                     <label for="newNoteTitle" class="block text-gray-600 mb-2">Title</label>
-                    <input type="text" id="newNoteTitle" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter note title" required>
+                    <input type="text" name="title" id="newNoteTitle" class="w-full px-4 py-2 border border-gray-300 rounded-md" required>
                 </div>
                 <div class="mb-4">
                     <label for="newNoteContent" class="block text-gray-600 mb-2">Content</label>
-                    <textarea id="newNoteContent" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter note content" rows="4" required></textarea>
+                    <textarea name="content" id="newNoteContent" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-md" required></textarea>
                 </div>
                 <div class="flex justify-end space-x-2">
-                    <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition" onclick="closeAddNoteModal()">Cancel</button>
-                    <button type="button" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition" onclick="addNote()">Save</button>
+                    <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-md" onclick="closeAddNoteModal()">Cancel</button>
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">Save</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        function searchNotes() {
-            const input = document.getElementById('searchNotes').value.toLowerCase();
-            const noteList = document.getElementById('noteList').children;
-            for (let i = 0; i < noteList.length; i++) {
-                const title = noteList[i].querySelector('span').textContent.toLowerCase();
-                noteList[i].style.display = title.includes(input) ? '' : 'none';
-            }
-        }
-
-        function selectNote(title, content) {
-            document.getElementById('noteTitle').innerText = title;
-            document.getElementById('noteContent').innerText = content;
-        }
-
         function openAddNoteModal() {
             document.getElementById('addNoteModal').classList.remove('hidden');
         }
@@ -102,26 +83,13 @@
             document.getElementById('newNoteContent').value = '';
         }
 
-        function addNote() {
-            const title = document.getElementById('newNoteTitle').value;
-            const content = document.getElementById('newNoteContent').value;
-            if (title && content) {
-                const noteList = document.getElementById('noteList');
-                const li = document.createElement('li');
-                li.className = 'p-3 bg-blue-50 rounded-md cursor-pointer hover:bg-blue-100 transition';
-                li.innerHTML = `<span class="text-gray-900">${title}</span><span class="text-sm text-gray-500 block">Created: ${new Date().toISOString().split('T')[0]}</span>`;
-                li.onclick = () => selectNote(title, content);
-                noteList.prepend(li);
-                closeAddNoteModal();
-            }
-        }
+        function selectNote(note) {
+            document.getElementById('noteTitle').innerText = note.title;
+            document.getElementById('noteContent').innerText = note.content;
 
-        function editNote() {
-            alert('Edit functionality to be implemented.');
-        }
-
-        function deleteNote() {
-            alert('Delete functionality to be implemented.');
+            const form = document.getElementById('deleteNoteForm');
+            form.action = `/notes/${note.id}`;
+            form.classList.remove('hidden');
         }
     </script>
 </x-layout>

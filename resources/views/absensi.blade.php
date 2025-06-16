@@ -1,12 +1,12 @@
-    @php
-        $role = 'dosen'; // Change to 'mahasiswa' to test student view
-    @endphp
+@php
+    $role = session('role');
+@endphp
 
     <x-layout title="Attendance" role="{{$role}}">
         <!-- Attendance Header -->
         <header class="mb-8">
             <h2 class="text-3xl font-bold text-gray-900">Attendance</h2>
-            <p class="text-gray-600 mt-2">{{ $role === 'dosen' ? 'Create and manage attendance for your courses.' : 'Mark your attendance for course sessions.' }}</p>
+            <p class="text-gray-600 mt-2">{{ $role === 'Dosen' ? 'Create and manage attendance for your courses.' : 'Mark your attendance for course sessions.' }}</p>
         </header>
 
         <!-- Attendance Layout -->
@@ -15,7 +15,7 @@
             <div class="bg-white p-6 rounded-lg shadow-md lg:col-span-2">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-lg font-semibold text-gray-900">Attendance Sessions</h3>
-                    @if($role === 'dosen')
+                    @if($role === 'Dosen')
                     <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition" onclick="openAddAttendanceModal()">Add Session</button>
                     @endif
                 </div>
@@ -38,7 +38,7 @@
                 </h3>
                 <p id="attendanceContent" class="text-gray-600 leading-loose" style="line-height: 2rem;">Select a session from the list to view its details.</p>
                 <div class="mt-4">
-                    @if($role === 'dosen')
+                    @if($role === 'Dosen')
                         <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition" onclick="editAttendance()">Edit Session</button>
                         <button class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition ml-2" onclick="deleteAttendance()">Delete Session</button>
                     @else
@@ -49,7 +49,7 @@
         </section>
 
         <!-- Add/Edit Attendance Modal (Dosen Only) -->
-        @if($role === 'dosen')
+        @if($role === 'Dosen')
             <div id="attendanceModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
                 <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
                     <h3 id="attendanceModalTitle" class="text-lg font-semibold text-gray-900 mb-4">Add New Session</h3>
@@ -77,7 +77,7 @@
         @endif
 
         <!-- Mark Attendance Modal (Mahasiswa Only) -->
-        @if($role === 'mahasiswa')
+        @if($role === 'Mahasiswa')
             <div id="markAttendanceModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
                 <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Mark Attendance</h3>
@@ -124,7 +124,7 @@
                 document.getElementById('attendanceTitle').innerText = title;
                 document.getElementById('attendanceContent').innerText = content;
             
-                @if($role === 'mahasiswa')
+                @if($role === 'Mahasiswa')
                     const markButton = document.getElementById('markAttendanceButton');
                     const today = new Date().toISOString().split('T')[0];
                     markButton.disabled = date !== today;
