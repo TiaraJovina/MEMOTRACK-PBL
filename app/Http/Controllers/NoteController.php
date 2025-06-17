@@ -17,7 +17,7 @@ class NoteController extends Controller
 
         return view('notes', [
             'notes' => $notes,
-            'role' => Auth::user()->role, // kalau view pakai <x-layout :role="$role">
+            'role' => Auth::user()->role,
         ]);
     }
 
@@ -38,7 +38,24 @@ class NoteController extends Controller
         return redirect()->route('notes')->with('success', 'Note created successfully.');
     }
 
-    // Hapus catatan (dengan validasi user yang sesuai)
+    // Update catatan yang sudah ada
+    public function update(Request $request, Note $note)
+    {
+        if ($note->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $validated = $request->validate([
+            'title'   => 'required|string|max:255',
+            'content' => 'required|string',
+        ]);
+
+        $note->update($validated);
+
+        return redirect()->route('notes')->with('success', 'Note updated successfully.');
+    }
+
+    // Hapus catatan
     public function destroy(Note $note)
     {
         if ($note->user_id !== Auth::id()) {

@@ -8,6 +8,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\NoteController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\JadwalController;
+
 
 // ======== Public Routes ========
 
@@ -29,11 +31,16 @@ Route::middleware('auth')->group(function () {
     // 📒 Notes
     Route::get('/notes', [NoteController::class, 'index'])->name('notes');
     Route::post('/notes', [NoteController::class, 'store'])->name('notes.store');
+    Route::put('/notes/{note}', [NoteController::class, 'update'])->name('notes.update'); 
     Route::delete('/notes/{note}', [NoteController::class, 'destroy'])->name('notes.destroy');
 
-    // 📆 Jadwal, Tugas, Profile
-    Route::view('/jadwal', 'jadwal')->name('jadwal');
-    Route::view('/tugas', 'tugas')->name('tugas');
+    // 📆 Jadwal
+    Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal.index');
+    Route::post('/jadwal', [JadwalController::class, 'store'])->name('jadwal.store');
+    Route::put('/jadwal/{jadwal}', [JadwalController::class, 'update'])->name('jadwal.update');
+    Route::delete('/jadwal/{jadwal}', [JadwalController::class, 'destroy'])->name('jadwal.destroy');
+    Route::resource('jadwal', JadwalController::class);
+    Route::delete('/jadwal/{id}', [JadwalController::class, 'destroy'])->name('jadwal.destroy');
 
     // 👤 Profile
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
@@ -53,4 +60,6 @@ Route::middleware('auth')->group(function () {
         request()->session()->regenerateToken();
         return redirect()->route('login');
     })->name('logout');
+
+    Route::view('/tugas', 'tugas')->name('tugas');
 });

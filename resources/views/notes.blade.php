@@ -41,12 +41,16 @@
             </h3>
             <p id="noteContent" class="text-gray-600 leading-loose" style="line-height: 2rem;">Click a note from the list to view its details.</p>
 
-            <!-- Tombol hapus -->
-            <form id="deleteNoteForm" method="POST" class="mt-4 hidden">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition">Delete Note</button>
-            </form>
+            <!-- Tombol Edit dan Hapus -->
+            <div id="noteActions" class="mt-4 hidden space-x-2">
+                <button type="button" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition" onclick="openEditNoteModal()">Edit</button>
+
+                <form id="deleteNoteForm" method="POST" class="inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition">Delete Note</button>
+                </form>
+            </div>
         </div>
     </section>
 
@@ -72,7 +76,32 @@
         </div>
     </div>
 
+    <!-- Edit Note Modal -->
+    <div id="editNoteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Edit Note</h3>
+            <form id="editNoteForm" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="mb-4">
+                    <label for="editNoteTitle" class="block text-gray-600 mb-2">Title</label>
+                    <input type="text" name="title" id="editNoteTitle" class="w-full px-4 py-2 border border-gray-300 rounded-md" required>
+                </div>
+                <div class="mb-4">
+                    <label for="editNoteContent" class="block text-gray-600 mb-2">Content</label>
+                    <textarea name="content" id="editNoteContent" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-md" required></textarea>
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-md" onclick="closeEditNoteModal()">Cancel</button>
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
+        let selectedNoteId = null;
+
         function openAddNoteModal() {
             document.getElementById('addNoteModal').classList.remove('hidden');
         }
@@ -83,13 +112,29 @@
             document.getElementById('newNoteContent').value = '';
         }
 
+        function openEditNoteModal() {
+            const notes = @json($notes);
+            const selected = notes.find(n => n.id === selectedNoteId);
+            if (selected) {
+                document.getElementById('editNoteTitle').value = selected.title;
+                document.getElementById('editNoteContent').value = selected.content;
+                document.getElementById('editNoteForm').action = `/notes/${selected.id}`;
+                document.getElementById('editNoteModal').classList.remove('hidden');
+            }
+        }
+
+        function closeEditNoteModal() {
+            document.getElementById('editNoteModal').classList.add('hidden');
+        }
+
         function selectNote(note) {
+            selectedNoteId = note.id;
             document.getElementById('noteTitle').innerText = note.title;
             document.getElementById('noteContent').innerText = note.content;
 
             const form = document.getElementById('deleteNoteForm');
             form.action = `/notes/${note.id}`;
-            form.classList.remove('hidden');
+            document.getElementById('noteActions').classList.remove('hidden');
         }
     </script>
 </x-layout>
