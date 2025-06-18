@@ -7,9 +7,9 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\NoteController;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\JadwalController;
-
+use App\Http\Controllers\TaskController;
+use Illuminate\Support\Facades\Auth;
 
 // ======== Public Routes ========
 
@@ -35,12 +35,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/notes/{note}', [NoteController::class, 'destroy'])->name('notes.destroy');
 
     // 📆 Jadwal
-    Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal.index');
-    Route::post('/jadwal', [JadwalController::class, 'store'])->name('jadwal.store');
-    Route::put('/jadwal/{jadwal}', [JadwalController::class, 'update'])->name('jadwal.update');
-    Route::delete('/jadwal/{jadwal}', [JadwalController::class, 'destroy'])->name('jadwal.destroy');
-    Route::resource('jadwal', JadwalController::class);
-    Route::delete('/jadwal/{id}', [JadwalController::class, 'destroy'])->name('jadwal.destroy');
+    Route::resource('jadwal', JadwalController::class)->except(['create', 'show', 'edit']);
+    // Tidak perlu mendefinisikan ulang `delete`, sudah termasuk di `Route::resource`
 
     // 👤 Profile
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
@@ -53,6 +49,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('/absensi/delete/{title}', [AbsensiController::class, 'delete'])->name('absensi.delete');
     Route::post('/absensi/{id}/mark', [AbsensiController::class, 'markAttendance']);
 
+    // 📝 Tasks
+    Route::middleware(['auth'])->group(function () {
+    Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');       // tampilkan daftar tugas
+    Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');      // tambah tugas baru
+    Route::put('/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update'); // edit tugas
+    Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy'); // hapus tugas
+    Route::post('/tasks/{task}/submit', [TaskController::class, 'submit'])->name('tasks.submit'); // submit tugas (file)
+});
     // 🚪 Logout
     Route::post('/logout', function () {
         Auth::logout();
@@ -60,6 +64,4 @@ Route::middleware('auth')->group(function () {
         request()->session()->regenerateToken();
         return redirect()->route('login');
     })->name('logout');
-
-    Route::view('/tugas', 'tugas')->name('tugas');
 });
